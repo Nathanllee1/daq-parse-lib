@@ -5,26 +5,70 @@
 
    import Number from "../DataViz/number.svelte";
    import Graph from "../DataViz/graph.svelte";
+   import { onMount } from "svelte";
 
-   const dash_config:object = {
-      sensor: "1",
-
+   let dash_config:object = {
+      "bpFront": {
+         size: SM,
+         viz: Number,
+         unit: "psi",
+         value: 5
+      },
+      "bpBack": {
+         size: SM,
+         viz: Number,
+         unit: "psi",
+         value: 0
+      }
    }
 
-   let curNum:number = 30;
-
+   // tester function
+   /*
    setInterval(() => {
-      curNum = Math.floor(Math.random() * 100) 
-   }, 500)
+      update_values({time:1, bpFront: Math.floor(Math.random() * 100), 
+         bpBack: Math.floor(Math.random() * 100)})
+   }, 500);
+   */
+
+   let time = 0;
+
+   const update_values = (cur_frame) => {
+      time = cur_frame.time;
+      delete cur_frame.time; // remove it to parse values
+
+      let frame_keys: string[] = Object.keys(cur_frame);
+
+      for (let i=0; i<frame_keys.length; i++) {
+         dash_config[frame_keys[i]].value = cur_frame[frame_keys[i]];
+      }
+   }
+
+   onMount(async () => {
+		const socket = new WebSocket('ws://localhost:4000');
+
+      // Connection opened
+      socket.addEventListener('open', function (event) {
+         socket.send('Hello Server!');
+      })
+
+      socket.addEventListener('message', function (event) {
+         console.log('Message from server ', JSON.stringify(event.data));
+         update_values(JSON.parse(event.data));
+      });
+	});
+
 
 </script>
 
 <h4 class="PageTitle">The Dashboard</h4>
-<button class="btn">Here's a button</button>
 
 <div class="dashboard">
+   <h3>{time}</h3>
    <div class="dashboardContainer">
-      <SM title={"Test number"} viz={Number} val={curNum} />
+      {#each Object.keys(dash_config) as comp}
+         <svelte:component this={dash_config[comp].size} val={dash_config[comp].value} unit={dash_config[comp].unit} 
+            title={comp} viz={dash_config[comp].viz}/>
+      {/each}
       
    </div>
 </div>
@@ -55,6 +99,10 @@
       border-color: #ffff;
       box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px,
          rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+
+      /* change later! */
+      width: 360px;
+      height: 360px;
    
    }
 

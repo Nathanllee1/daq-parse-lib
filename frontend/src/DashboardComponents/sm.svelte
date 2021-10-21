@@ -2,12 +2,13 @@
    export let title:string;
    export let viz:any;
    export let val:number;
+   export let unit:string;
 </script>
 
 <div id="dashComp" class="sm">
    <div class="Title">{title}</div>
    <div class="vizCont">
-      <svelte:component this={viz} val={val} />
+      <svelte:component this={viz} val={val} unit={unit} />
    </div>
    
 </div>

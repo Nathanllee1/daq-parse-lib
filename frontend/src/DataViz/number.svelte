@@ -1,10 +1,11 @@
 <script lang="ts">
    export let val:number;
+   export let unit:string;
 </script>
 
 <div id="numberContainer">
    <div id="numberViz">{val}</div>
-   <h4>Miles an hour</h4>
+   <h4>{unit}</h4>
 </div>
 
 
