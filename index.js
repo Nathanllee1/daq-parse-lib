@@ -1,8 +1,19 @@
 import ParseManager from "./ParseManager.js"
-const packet = [0x42, 0x0F, 0x05, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00, 0, 0];
+import fs from "fs"
+import PapaParse from "papaparse"
 
-const pm = new ParseManager(console.log);
+const readings = [];
+const pm = new ParseManager((data) => {
+    readings.push(data);
+});
 
-for (const b of packet) {
+const data = fs.readFileSync("./D26.bin", {encoding: null});
+for (const b of data) {
     pm.feedByte(b);
 }
+
+
+setTimeout(() => {
+    const csv = PapaParse.unparse(readings);
+    fs.writeFileSync("out.csv", csv);
+}, 0);
