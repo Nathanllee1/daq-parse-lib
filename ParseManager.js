@@ -112,6 +112,8 @@ export default class ParseManager {
     }
 
     feedArrayBuffer(buffer) {
+        for (const b of buffer)
+            this.feedByte(b);
 
     }
 }

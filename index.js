@@ -8,9 +8,7 @@ const pm = new ParseManager((data) => {
 });
 
 const data = fs.readFileSync("./D26.bin", {encoding: null});
-for (const b of data) {
-    pm.feedByte(b);
-}
+pm.feedArrayBuffer(data);
 
 
 setTimeout(() => {
