@@ -1,9 +1,56 @@
-<div class="graph">
-    <svg viewBox="69 263.605 220.7 60.471" xmlns="http://www.w3.org/2000/svg">
-        <path style="fill: rgba(216, 216, 216, 0); stroke: rgb(50, 201, 105); stroke-width: 2px;" d="M 80.499 263.605 C 108.155 263.605 135.461 275.279 160.434 297.779 C 178.367 313.936 198.645 318.233 218.021 309.983 C 240.642 300.351 263.433 292.21 286.353 285.573 C 302.082 281.019 317.604 283.268 332.199 295.264"/>
-      </svg>
-</div>
+<script lang="ts">
+    import { chart } from "svelte-apexcharts";
 
+    let data = [3, 4, 6, 1, 15023400]
+
+    var options = {
+        series: [
+            {
+                data: data.slice(1),
+            },
+        ],
+        chart: {
+            id: "realtime",
+            height: 350,
+            type: "line",
+            
+            toolbar: {
+                show: false,
+            },
+            zoom: {
+                enabled: false,
+            },
+        },
+        dataLabels: {
+            enabled: false,
+        },
+        stroke: {
+            curve: "smooth",
+        },
+        title: {
+            text: "Dynamic Updating Chart",
+            align: "left",
+        },
+        markers: {
+            size: 0,
+        },
+        xaxis: {
+            type: "datetime",
+            range: 34,
+        },
+        yaxis: {
+            max: 100,
+        },
+        legend: {
+            show: false,
+        },
+    };
+
+</script>
+
+<div class="graph">
+    <div use:chart={options} />
+</div>
 
 <style>
     .graph {

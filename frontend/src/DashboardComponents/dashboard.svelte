@@ -5,6 +5,7 @@
 
    import Number from "../DataViz/number.svelte";
    import Graph from "../DataViz/graph.svelte";
+   import Dial from "../DataViz/dial.svelte";
    import { onMount } from "svelte";
 
    let dash_config:object = {
@@ -22,14 +23,6 @@
       }
    }
 
-   // tester function
-   /*
-   setInterval(() => {
-      update_values({time:1, bpFront: Math.floor(Math.random() * 100), 
-         bpBack: Math.floor(Math.random() * 100)})
-   }, 500);
-   */
-
    let time = 0;
 
    const update_values = (cur_frame) => {
@@ -44,7 +37,7 @@
    }
 
    onMount(async () => {
-		const socket = new WebSocket('ws://localhost:4000');
+		const socket = new WebSocket('ws://' + window.location.hostname + ":4000");
 
       // Connection opened
       socket.addEventListener('open', function (event) {
@@ -60,7 +53,7 @@
 
 </script>
 
-<h4 class="PageTitle">The Dashboard</h4>
+<h4 class="PageTitle">Baja Dashboard</h4>
 
 <div class="dashboard">
    <h3>{time}</h3>
@@ -100,9 +93,6 @@
       box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px,
          rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
 
-      /* change later! */
-      width: 360px;
-      height: 360px;
    
    }
 

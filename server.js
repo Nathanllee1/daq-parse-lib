@@ -1,6 +1,21 @@
+import express from 'express';
 import WebSocket, { WebSocketServer } from 'ws';
 import ParseManager from "./parser/ParseManager.js"
 import fs from "fs"
+const app = express()
+
+// http stuff
+const port = 3000;
+app.use(express.static('frontend/public'));
+
+
+app.listen(port, () => {
+  console.log(`Example app listening at http://localhost:${port}`)
+})
+
+
+
+// websocket stuff
 
 const wss = new WebSocketServer({ port: 4000 });
 
