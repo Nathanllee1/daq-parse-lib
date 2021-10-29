@@ -1,0 +1,3 @@
+[submodule "daq-parse-lib"]
+	path = daq-parse-lib
+	url = https://github.com/DominicChm/daq-parse-lib.git

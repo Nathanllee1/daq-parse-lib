@@ -1,6 +1,6 @@
 import express from 'express';
 import WebSocket, { WebSocketServer } from 'ws';
-import ParseManager from "./parser/ParseManager.js"
+import ParseManager from "./daq-parse-lib/ParseManager.js"
 import fs from "fs"
 const app = express()
 
@@ -13,10 +13,11 @@ app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
 
-
+app.get("/config", (req, res) => {
+  
+})
 
 // websocket stuff
-
 const wss = new WebSocketServer({ port: 4000 });
 
 wss.on('connection', function connection(ws) {

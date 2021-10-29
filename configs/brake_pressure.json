@@ -1,0 +1,14 @@
+{
+    "bpFront": {
+       size: SM,
+       viz: Number,
+       unit: "psi",
+       value: 5
+    },
+    "bpBack": {
+       size: SM,
+       viz: Number,
+       unit: "psi",
+       value: 0
+    }
+ }
