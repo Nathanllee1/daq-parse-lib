@@ -1,77 +1,84 @@
 <script lang="ts">
-   import SM from "./sm.svelte";
-   import WD from "./wd.svelte";
-   import TA from "./ta.svelte";
+   import { Tabs, Tab, TabContent } from "carbon-components-svelte";
+   import { ProgressBar } from "carbon-components-svelte";
 
-   import Number from "../DataViz/number.svelte";
-   import Graph from "../DataViz/graph.svelte";
-   import Dial from "../DataViz/dial.svelte";
+   import { frame } from "./frame_store";
+   import AutoDashboard from "./auto_dashboard.svelte";
+   import SpecifiedDashboard from "./specified_dashboard.svelte";
+
    import { onMount } from "svelte";
 
-   let dash_config:object = {
-      "bpFront": {
-         size: SM,
-         viz: Number,
-         unit: "psi",
-         value: 5
-      },
-      "bpBack": {
-         size: SM,
-         viz: Number,
-         unit: "psi",
-         value: 0
+   let connected_status = false;
+
+   const connect = () => {
+      let socket;
+      try {
+         socket = new WebSocket("ws://" + window.location.hostname + ":4000");
+      } catch {
+         throw "Cannot connect to ws://" + window.location.hostname + ":4000";
       }
-   }
-
-   let time = 0;
-
-   const update_values = (cur_frame) => {
-      time = cur_frame.time;
-      delete cur_frame.time; // remove it to parse values
-
-      let frame_keys: string[] = Object.keys(cur_frame);
-
-      for (let i=0; i<frame_keys.length; i++) {
-         dash_config[frame_keys[i]].value = cur_frame[frame_keys[i]];
-      }
-   }
-
-   onMount(async () => {
-		const socket = new WebSocket('ws://' + window.location.hostname + ":4000");
 
       // Connection opened
-      socket.addEventListener('open', function (event) {
-         socket.send('Hello Server!');
-      })
-
-      socket.addEventListener('message', function (event) {
-         console.log('Message from server ', JSON.stringify(event.data));
-         update_values(JSON.parse(event.data));
+      socket.addEventListener("open", function (event) {
+         socket.send("Hello Server!");
+         connected_status = true;
       });
-	});
 
+      socket.addEventListener("message", function (event) {
+         console.log("Message from server ", JSON.parse(event.data));
+         frame.update((frame) => JSON.parse(event.data));
+      });
 
+      socket.addEventListener("close", (event) => {
+         connected_status = false;
+      });
+   };
+
+   setInterval(() => {
+      if (!connected_status) {
+         try {
+            connect();
+         } catch {}
+      }
+   }, 5000);
 </script>
 
-<h4 class="PageTitle">Baja Dashboard</h4>
+<div id="header">
+   <h4 class="PageTitle">Baja Dashboard</h4>
+   <br />
 
-<div class="dashboard">
-   <h3>{time}</h3>
-   <div class="dashboardContainer">
-      {#each Object.keys(dash_config) as comp}
-         <svelte:component this={dash_config[comp].size} val={dash_config[comp].value} unit={dash_config[comp].unit} 
-            title={comp} viz={dash_config[comp].viz}/>
-      {/each}
-      
-   </div>
+   {#if connected_status}
+      <div>Connected to the Local DAQ Server</div>
+      <br />
+   {:else}
+      <div>Disconnected from the Local DAQ Server</div>
+      <ProgressBar width="100px" helperText="Connecting..." />
+   {/if}
+
+   <br />
+</div>
+
+<div class="dashboard" style="opacity:{connected_status ? 1 : 0.5}">
+   <Tabs>
+      <Tab label="Auto" />
+      <Tab label="Test" />
+      <div slot="content">
+         <TabContent>
+            <div>
+               This dashboard tries to automatically figure out what sensors are
+               being sent form the DAQ
+            </div>
+            <AutoDashboard />
+         </TabContent>
+
+         <TabContent>
+            <SpecifiedDashboard />
+         </TabContent>
+      </div>
+   </Tabs>
 </div>
 
 <style>
-   .dashboardContainer {
-      display: flex;
-      flex-wrap: wrap;
-   }
-
    .btn {
       background-color: #54d334;
       border: #54d334;
@@ -92,8 +99,6 @@
       border-color: #ffff;
       box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px,
          rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
-
-   
    }
 
    :global(#dashComp:hover) {
@@ -110,12 +115,19 @@
 
    .PageTitle {
       font-size: 45px;
-      margin-left: 30px;
       background: #49b82d;
       background: -webkit-linear-gradient(to right, #49b82d 0%, #eaf72a 100%);
       background: -moz-linear-gradient(to right, #49b82d 0%, #eaf72a 100%);
       background: linear-gradient(to right, #49b82d 0%, #eaf72a 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+   }
+
+   #header {
+      margin-left: 30px;
+      background-color: #ffffff;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2000 1500'%3E%3Cdefs%3E%3Crect stroke='%23ffffff' stroke-width='.5' width='1' height='1' id='s'/%3E%3Cpattern id='a' width='3' height='3' patternUnits='userSpaceOnUse' patternTransform='scale(13.35) translate(-925.09 -693.82)'%3E%3Cuse fill='%23fcfcfc' href='%23s' y='2'/%3E%3Cuse fill='%23fcfcfc' href='%23s' x='1' y='2'/%3E%3Cuse fill='%23fafafa' href='%23s' x='2' y='2'/%3E%3Cuse fill='%23fafafa' href='%23s'/%3E%3Cuse fill='%23f7f7f7' href='%23s' x='2'/%3E%3Cuse fill='%23f7f7f7' href='%23s' x='1' y='1'/%3E%3C/pattern%3E%3Cpattern id='b' width='7' height='11' patternUnits='userSpaceOnUse' patternTransform='scale(13.35) translate(-925.09 -693.82)'%3E%3Cg fill='%23f5f5f5'%3E%3Cuse href='%23s'/%3E%3Cuse href='%23s' y='5' /%3E%3Cuse href='%23s' x='1' y='10'/%3E%3Cuse href='%23s' x='2' y='1'/%3E%3Cuse href='%23s' x='2' y='4'/%3E%3Cuse href='%23s' x='3' y='8'/%3E%3Cuse href='%23s' x='4' y='3'/%3E%3Cuse href='%23s' x='4' y='7'/%3E%3Cuse href='%23s' x='5' y='2'/%3E%3Cuse href='%23s' x='5' y='6'/%3E%3Cuse href='%23s' x='6' y='9'/%3E%3C/g%3E%3C/pattern%3E%3Cpattern id='h' width='5' height='13' patternUnits='userSpaceOnUse' patternTransform='scale(13.35) translate(-925.09 -693.82)'%3E%3Cg fill='%23f5f5f5'%3E%3Cuse href='%23s' y='5'/%3E%3Cuse href='%23s' y='8'/%3E%3Cuse href='%23s' x='1' y='1'/%3E%3Cuse href='%23s' x='1' y='9'/%3E%3Cuse href='%23s' x='1' y='12'/%3E%3Cuse href='%23s' x='2'/%3E%3Cuse href='%23s' x='2' y='4'/%3E%3Cuse href='%23s' x='3' y='2'/%3E%3Cuse href='%23s' x='3' y='6'/%3E%3Cuse href='%23s' x='3' y='11'/%3E%3Cuse href='%23s' x='4' y='3'/%3E%3Cuse href='%23s' x='4' y='7'/%3E%3Cuse href='%23s' x='4' y='10'/%3E%3C/g%3E%3C/pattern%3E%3Cpattern id='c' width='17' height='13' patternUnits='userSpaceOnUse' patternTransform='scale(13.35) translate(-925.09 -693.82)'%3E%3Cg fill='%23f2f2f2'%3E%3Cuse href='%23s' y='11'/%3E%3Cuse href='%23s' x='2' y='9'/%3E%3Cuse href='%23s' x='5' y='12'/%3E%3Cuse href='%23s' x='9' y='4'/%3E%3Cuse href='%23s' x='12' y='1'/%3E%3Cuse href='%23s' x='16' y='6'/%3E%3C/g%3E%3C/pattern%3E%3Cpattern id='d' width='19' height='17' patternUnits='userSpaceOnUse' patternTransform='scale(13.35) translate(-925.09 -693.82)'%3E%3Cg fill='%23ffffff'%3E%3Cuse href='%23s' y='9'/%3E%3Cuse href='%23s' x='16' y='5'/%3E%3Cuse href='%23s' x='14' y='2'/%3E%3Cuse href='%23s' x='11' y='11'/%3E%3Cuse href='%23s' x='6' y='14'/%3E%3C/g%3E%3Cg fill='%23efefef'%3E%3Cuse href='%23s' x='3' y='13'/%3E%3Cuse href='%23s' x='9' y='7'/%3E%3Cuse href='%23s' x='13' y='10'/%3E%3Cuse href='%23s' x='15' y='4'/%3E%3Cuse href='%23s' x='18' y='1'/%3E%3C/g%3E%3C/pattern%3E%3Cpattern id='e' width='47' height='53' patternUnits='userSpaceOnUse' patternTransform='scale(13.35) translate(-925.09 -693.82)'%3E%3Cg fill='%23F60'%3E%3Cuse href='%23s' x='2' y='5'/%3E%3Cuse href='%23s' x='16' y='38'/%3E%3Cuse href='%23s' x='46' y='42'/%3E%3Cuse href='%23s' x='29' y='20'/%3E%3C/g%3E%3C/pattern%3E%3Cpattern id='f' width='59' height='71' patternUnits='userSpaceOnUse' patternTransform='scale(13.35) translate(-925.09 -693.82)'%3E%3Cg fill='%23F60'%3E%3Cuse href='%23s' x='33' y='13'/%3E%3Cuse href='%23s' x='27' y='54'/%3E%3Cuse href='%23s' x='55' y='55'/%3E%3C/g%3E%3C/pattern%3E%3Cpattern id='g' width='139' height='97' patternUnits='userSpaceOnUse' patternTransform='scale(13.35) translate(-925.09 -693.82)'%3E%3Cg fill='%23F60'%3E%3Cuse href='%23s' x='11' y='8'/%3E%3Cuse href='%23s' x='51' y='13'/%3E%3Cuse href='%23s' x='17' y='73'/%3E%3Cuse href='%23s' x='99' y='57'/%3E%3C/g%3E%3C/pattern%3E%3C/defs%3E%3Crect fill='url(%23a)' width='100%25' height='100%25'/%3E%3Crect fill='url(%23b)' width='100%25' height='100%25'/%3E%3Crect fill='url(%23h)' width='100%25' height='100%25'/%3E%3Crect fill='url(%23c)' width='100%25' height='100%25'/%3E%3Crect fill='url(%23d)' width='100%25' height='100%25'/%3E%3Crect fill='url(%23e)' width='100%25' height='100%25'/%3E%3Crect fill='url(%23f)' width='100%25' height='100%25'/%3E%3Crect fill='url(%23g)' width='100%25' height='100%25'/%3E%3C/svg%3E");
+      background-attachment: fixed;
+      background-size: cover;
    }
 </style>

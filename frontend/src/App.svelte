@@ -1,5 +1,8 @@
 <script lang="ts">
-	import Dashboard from "./DashboardComponents/dashboard.svelte"
+	import Dashboard from "./DashboardComponents/dashboard.svelte";
+   import "carbon-components-svelte/css/white.css";
+
+
 </script>
 
 <main>

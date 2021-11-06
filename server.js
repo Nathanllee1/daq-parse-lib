@@ -1,6 +1,7 @@
 import express from 'express';
 import WebSocket, { WebSocketServer } from 'ws';
 import ParseManager from "./daq-parse-lib/ParseManager.js"
+import config from "./daq-parse-lib/vehicle_config.json"
 import fs from "fs"
 const app = express()
 
@@ -14,7 +15,7 @@ app.listen(port, () => {
 })
 
 app.get("/config", (req, res) => {
-  
+  res.send(config);
 })
 
 // websocket stuff
@@ -41,7 +42,7 @@ const pm = new ParseManager((data) => {
     send_to_everyone(JSON.stringify(data));
   }, 500)
   
-});
+}, config); // TODO make cli argument
 
 let time = 0;
 setInterval(() => {
@@ -52,7 +53,8 @@ setInterval(() => {
   send_to_everyone(JSON.stringify({
     time: time,
     bpFront: one,
-    bpBack: two
+    bpBack: two,
+    dynamicElement: one
   }))
   time += 1;
 }, 1000)
