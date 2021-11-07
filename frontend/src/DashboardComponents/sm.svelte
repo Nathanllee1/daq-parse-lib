@@ -15,7 +15,7 @@
 
 <style>
    .sm {
-      width: 360px;
+      min-width: 360px;
       height: 360px;
       
    }

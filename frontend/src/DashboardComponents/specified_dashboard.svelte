@@ -24,6 +24,12 @@
     })
 
     let dash_config: object = {
+        time: {
+            size: SM,
+            viz: Number,
+            unit: "seconds",
+            value: 0,
+        },
         bpFront: {
             size: SM,
             viz: Number,
@@ -36,12 +42,7 @@
             unit: "psi",
             value: 0,
         },
-        time: {
-            size: SM,
-            viz: Number,
-            unit: "seconds",
-            value: 0,
-        },
+        
     };
 
     
