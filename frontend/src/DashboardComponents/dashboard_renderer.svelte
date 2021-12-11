@@ -8,11 +8,10 @@
     
     {#each Object.keys(dash_config) as comp}
         <svelte:component
-            this={dash_config[comp].size}
+            this={dash_config[comp].viz}
             val={dash_config[comp].value}
             unit={dash_config[comp].unit}
             title={comp}
-            viz={dash_config[comp].viz}
         />
     {/each}
 </div>

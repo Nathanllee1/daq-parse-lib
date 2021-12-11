@@ -1,13 +1,10 @@
 <script lang="ts">
-    import SM from "./sm.svelte";
-    import WD from "./wd.svelte";
-    import TA from "./ta.svelte";
 
     import DashboardRenderer from "./dashboard_renderer.svelte";
 
-    import { frame } from "./frame_store";
+    import { frame } from "./dashboard_store";
 
-    import Number from "../DataViz/number.svelte";
+    import Numbercard from "./numbercard.svelte";
 
     let dash_config: object = {};
 
@@ -18,8 +15,7 @@
 
             if (!dash_config[frame_keys[i]]) { // if it's not in the dash_config, add it in
                 dash_config[frame_keys[i]] = {
-                    size: SM,
-                    viz: Number,
+                    viz: Numbercard,
                     unit: "",
                     value: cur_frame[frame_keys[i]]
                 }

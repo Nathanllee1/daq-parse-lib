@@ -1,53 +1,28 @@
 <script lang="ts">
    import { Tabs, Tab, TabContent } from "carbon-components-svelte";
    import { ProgressBar } from "carbon-components-svelte";
-
-   import { frame } from "./frame_store";
    import AutoDashboard from "./auto_dashboard.svelte";
    import SpecifiedDashboard from "./specified_dashboard.svelte";
 
    import { onMount } from "svelte";
 
-   let connected_status = false;
-
-   const connect = () => {
-      let socket;
-      try {
-         socket = new WebSocket("ws://" + window.location.hostname + ":4000");
-      } catch {
-         throw "Cannot connect to ws://" + window.location.hostname + ":4000";
-      }
-
-      // Connection opened
-      socket.addEventListener("open", function (event) {
-         socket.send("Hello Server!");
-         connected_status = true;
-      });
-
-      socket.addEventListener("message", function (event) {
-         console.log("Message from server ", JSON.parse(event.data));
-         frame.update((frame) => JSON.parse(event.data));
-      });
-
-      socket.addEventListener("close", (event) => {
-         connected_status = false;
-      });
-   };
+   import { connected_status, dashboards } from "./dashboard_store.js";
+   import { connect } from "./websocket_interface";
 
    setInterval(() => {
-      if (!connected_status) {
+      if (!$connected_status) {
          try {
             connect();
          } catch {}
       }
-   }, 5000);
+   }, 1000);
 </script>
 
 <div id="header">
    <h4 class="PageTitle">Baja Dashboard</h4>
    <br />
 
-   {#if connected_status}
+   {#if $connected_status}
       <div>Connected to the Local DAQ Server</div>
       <br />
       <br />
@@ -63,7 +38,12 @@
 <div class="dashboard" style="opacity:{connected_status ? 1 : 0.5}">
    <Tabs>
       <Tab label="Auto" />
-      <Tab label="Test" />
+
+      {#each $dashboards as dashboard}
+         <Tab label={dashboard.name} />
+      {/each}
+
+      <Tab style="color:green" label="Add a Dashboard" />
       <div slot="content">
          <TabContent>
             <div>
@@ -72,17 +52,20 @@
             </div>
             <AutoDashboard />
          </TabContent>
+         
+         {#each $dashboards as dashboard}
+            <TabContent>
+               <SpecifiedDashboard dash_config={dashboard}/>
+            </TabContent>
+         {/each}
+         
 
-         <TabContent>
-            <SpecifiedDashboard />
-         </TabContent>
+         <TabContent />
       </div>
    </Tabs>
 </div>
 
 <style>
-   
-
    :global(#dashComp) {
       border-radius: 30px;
 

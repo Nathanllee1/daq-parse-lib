@@ -6,7 +6,7 @@ import fs from "fs"
 const app = express()
 
 // http stuff
-const port = 3000;
+const port = 3100;
 app.use(express.static('frontend/public'));
 
 
@@ -49,7 +49,7 @@ setInterval(() => {
   //const data = fs.readFileSync("./D26.bin", {encoding: null});
   //pm.feedArrayBuffer(data);
   let one = Math.floor(Math.random() * 100);
-  let two = Math.floor(Math.random() * 1000000);
+  let two = Math.floor(Math.random() * 100);
   send_to_everyone(JSON.stringify({
     time: time,
     bpFront: one,

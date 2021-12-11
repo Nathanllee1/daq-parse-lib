@@ -1,13 +1,9 @@
 <script lang="ts">
-    import SM from "./sm.svelte";
-    import WD from "./wd.svelte";
-    import TA from "./ta.svelte";
+
 
     import DashboardRenderer from "./dashboard_renderer.svelte";
 
-    import { frame } from "./frame_store";
-
-    import Number from "../DataViz/number.svelte";
+    import { frame } from "./dashboard_store";
 
     const update_values = (cur_frame) => {
         let frame_keys: string[] = Object.keys(cur_frame);
@@ -23,30 +19,8 @@
         update_values(value);
     })
 
-    let dash_config: object = {
-        time: {
-            size: SM,
-            viz: Number,
-            unit: "seconds",
-            value: 0,
-        },
-        bpFront: {
-            size: SM,
-            viz: Number,
-            unit: "psi",
-            value: 5,
-        },
-        bpBack: {
-            size: SM,
-            viz: Number,
-            unit: "psi",
-            value: 0,
-        },
-        
-    };
+    export let dash_config;
 
-    
-    
 </script>
 
 <DashboardRenderer dash_config={dash_config} />
