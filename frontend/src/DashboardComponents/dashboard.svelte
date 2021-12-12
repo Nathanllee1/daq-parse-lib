@@ -76,15 +76,16 @@
 
       border-style: solid;
       border-width: 1px;
-      border-color: #ffff;
-      box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px,
-         rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+      border-color: #e0e0e0;
+      
    }
 
    :global(#dashComp:hover) {
       /*background-image: linear-gradient( #25ff80bd  ,#2a2e32 30%);*/
       box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px,
          rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+
+      
    }
 
    :global(.Title) {

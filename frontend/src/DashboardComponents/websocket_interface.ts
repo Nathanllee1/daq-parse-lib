@@ -16,10 +16,10 @@ export const connect = () => {
     });
 
     socket.addEventListener("message", function (event) {
-        console.log("Message from server ", JSON.parse(event.data));
-        frame.update((frame) => frame = JSON.parse(event.data));
-
-
+        frame.update((frame) => {
+            // console.log(JSON.parse(event.data));
+            return frame = JSON.parse(event.data);
+        });
     });
 
     socket.addEventListener("close", (event) => {

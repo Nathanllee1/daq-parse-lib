@@ -1,26 +1,29 @@
 <script>
     export let dash_config;
+    export let dash_index = 0;
+
+    import AddCard from "./add_card.svelte";
 </script>
 
-<br>
-<div>Sensors: <b>{Object.keys(dash_config).join(", ")}</b></div>
+<br />
 <div class="dashboardContainer">
-    
-    {#each Object.keys(dash_config) as comp}
+    {#each dash_config.sensors as comp}
         <svelte:component
-            this={dash_config[comp].viz}
-            val={dash_config[comp].value}
-            unit={dash_config[comp].unit}
-            title={comp}
+            this={comp.viz}
+            val={comp.value}
+            unit={comp.unit}
+            title={comp.sensor}
         />
     {/each}
-</div>
 
+    {#if dash_config.name !== "Auto"}
+        <AddCard dash_index={dash_index} />
+    {/if}
+</div>
 
 <style>
     .dashboardContainer {
-      display: flex;
-      flex-wrap: wrap;
-      margin-left: 30px;
-   }
+        display: flex;
+        flex-wrap: wrap;
+    }
 </style>
